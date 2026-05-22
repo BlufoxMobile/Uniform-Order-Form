@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="theme-color" content="#0b3a8c" />
+<title>Blufox Mobile Uniform Order</title>
+<style>
+  :root {
+    --brand: #0b3a8c;
+    --brand-dark: #082a66;
+    --accent: #2f6df6;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --text: #1a2238;
+    --muted: #5a6378;
+    --border: #d9dde7;
+    --error: #c0392b;
+    --success: #1e8449;
+    --radius: 12px;
+    --shadow: 0 4px 16px rgba(11, 58, 140, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.45;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 16px 16px 80px;
+  }
+
+  header.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 16px;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dark) 100%);
+    color: #fff;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 16px;
+  }
+
+  header.brand .logo {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #ffffff22;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    border: 1px solid #ffffff33;
+  }
+
+  header.brand h1 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  header.brand p {
+    margin: 2px 0 0;
+    font-size: 13px;
+    opacity: 0.85;
+  }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 14px;
+  }
+
+  .card h2 {
+    margin: 0 0 10px;
+    font-size: 14px;
+    color: var(--brand-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .card .hint {
+    margin: -4px 0 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  label .req { color: var(--error); }
+
+  select, input[type="text"], input[type="email"], textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px; /* >=16px prevents iOS zoom on focus */
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--text);
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%23555' d='M6 8L0 0h12z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+
+  select:focus, input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.18);
+  }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-row .lbl { color: var(--muted); }
+  .info-row .val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
+
+  .info-empty {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .size-block {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: #fff;
+  }
+  .size-block:last-child { margin-bottom: 0; }
+
+  .size-block.active {
+    border-color: var(--accent);
+    background: #f7faff;
+    box-shadow: 0 0 0 3px rgba(47, 109, 246, 0.10);
+  }
+
+  .qty-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .qty-row .size-name {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--brand-dark);
+  }
+
+  .qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .qty-ctrl button {
+    width: 38px;
+    height: 38px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--brand);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .qty-ctrl button:active { background: #eef2ff; }
+  .qty-ctrl button:disabled { color: #c0c5d4; cursor: not-allowed; }
+
+  .qty-ctrl .qty-val {
+    min-width: 28px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .name-list {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .name-list.hidden { display: none; }
+
+  .name-list .nl-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .name-row:last-child { margin-bottom: 0; }
+
+  .name-row .nm-idx {
+    flex: 0 0 24px;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .name-row input {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  textarea {
+    min-height: 70px;
+    resize: vertical;
+  }
+
+  .totals {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-weight: 700;
+    color: var(--brand-dark);
+  }
+
+  /* Order receipt preview */
+  .receipt {
+    background: #0f172a;
+    color: #e2e8f0;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12.5px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    margin-top: 6px;
+  }
+
+  button.submit {
+    width: 100%;
+    padding: 16px;
+    background: var(--brand);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  button.submit:disabled {
+    background: #9aa6c2;
+    cursor: not-allowed;
+  }
+  button.submit:active:not(:disabled) { background: var(--brand-dark); }
+
+  .status {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    display: none;
+  }
+  .status.show { display: block; }
+  .status.success { background: #e8f6ee; color: var(--success); border: 1px solid #b9e2c8; }
+  .status.error { background: #fdecea; color: var(--error); border: 1px solid #f4b9b3; }
+  .status.loading { background: #eef2ff; color: var(--brand-dark); border: 1px solid #c8d4f5; }
+
+  .footer-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 380px) {
+    .qty-ctrl button { width: 34px; height: 34px; font-size: 18px; }
+    header.brand h1 { font-size: 16px; }
+    .size-block { padding: 8px 10px; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="brand">
+      <div class="logo">BF</div>
+      <div>
+        <h1>Blufox Mobile Uniform Order</h1>
+        <p>Submit a shirt order for your store</p>
+      </div>
+    </header>
+
+    <form id="orderForm" autocomplete="off" novalidate>
+
+      <!-- Store Selection -->
+      <section class="card">
+        <h2>Store</h2>
+        <div class="field">
+          <label for="storeSelect">Select Your Store <span class="req">*</span></label>
+          <select id="storeSelect" required>
+            <option value="">Loading stores…</option>
+          </select>
+        </div>
+
+        <div id="storeInfo" class="info-empty">
+          Select a store to auto-fill manager and DM info.
+        </div>
+      </section>
+
+      <!-- Shirt Quantities + Names -->
+      <section class="card">
+        <h2>Shirts</h2>
+        <p class="hint">Tap +/− to set the quantity. We default to 3 name slots per size (3 shirts per rep); more slots appear automatically as you add shirts.</p>
+        <div id="sizes"></div>
+        <div class="totals">
+          <span>Total shirts</span>
+          <span id="totalCount">0</span>
+        </div>
+      </section>
+
+      <!-- Shipping Address -->
+      <section class="card">
+        <h2>Shipping Address</h2>
+        <p class="hint">If Operations doesn't already have your store address on file, please fill it in below.</p>
+        <div class="field">
+          <label for="storeAddress">Store Street Address</label>
+          <textarea id="storeAddress" placeholder="123 Main St&#10;City, ST 60000"></textarea>
+        </div>
+      </section>
+
+      <!-- Order Preview -->
+      <section class="card">
+        <h2>Order Preview</h2>
+        <p class="hint">This is exactly what Operations will receive in the email.</p>
+        <div id="receipt" class="receipt">Select a store and add shirts to preview your order.</div>
+      </section>
+
+      <button type="submit" class="submit" id="submitBtn">Submit Order</button>
+
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+
+      <p class="footer-note">Order data is sent to Operations for fulfillment.</p>
+    </form>
+  </div>
+
+<script>
+/* ---------- CONFIG ---------- */
+const DIRECTORY_URL = "https://blufoxmobile.github.io/Daily-Sales-Report/data/store-directory.json";
+
+// Paste your Zapier "Catch Hook" webhook URL here once you create the Zap.
+const ZAPIER_WEBHOOK_URL = "REPLACE_WITH_YOUR_ZAPIER_WEBHOOK_URL";
+
+// Recipients that are constant (always on the email):
+const OPS_MANAGER_EMAIL = "REPLACE_WITH_OPS_MANAGER_EMAIL";
+const SUBMITTER_EMAIL   = "jbilbrey@blufoxmobile.com"; // you
+
+const SIZES = ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "5XL", "6XL"];
+const SHIRTS_PER_REP = 3;   // 3 shirts per rep
+const MIN_NAME_SLOTS = 3;   // always show at least 3 name fields when qty > 0
+
+/* ---------- STATE ---------- */
+let directory = null;
+const qty = {};
+const names = {}; // names[size] = ["John","Jane",...]; persists across qty changes
+SIZES.forEach(s => { qty[s] = 0; names[s] = []; });
+
+/* ---------- DOM ---------- */
+const storeSelect = document.getElementById("storeSelect");
+const storeInfo   = document.getElementById("storeInfo");
+const sizesWrap   = document.getElementById("sizes");
+const totalEl     = document.getElementById("totalCount");
+const form        = document.getElementById("orderForm");
+const submitBtn   = document.getElementById("submitBtn");
+const statusEl    = document.getElementById("status");
+const addressEl   = document.getElementById("storeAddress");
+const receiptEl   = document.getElementById("receipt");
+
+/* ---------- BUILD SIZE BLOCKS ---------- */
+function buildSizeBlocks() {
+  sizesWrap.innerHTML = "";
+  SIZES.forEach(size => {
+    const block = document.createElement("div");
+    block.className = "size-block";
+    block.dataset.size = size;
+    block.innerHTML = `
+      <div class="qty-row">
+        <span class="size-name">${size}</span>
+        <div class="qty-ctrl">
+          <button type="button" aria-label="Decrease ${size}" data-act="dec" data-size="${size}">−</button>
+          <span class="qty-val" id="qty-${size}">0</span>
+          <button type="button" aria-label="Increase ${size}" data-act="inc" data-size="${size}">+</button>
+        </div>
+      </div>
+      <div class="name-list hidden" id="names-${size}">
+        <div class="nl-label">Recipients for ${size}</div>
+        <div class="name-rows" id="nrows-${size}"></div>
+      </div>
+    `;
+    sizesWrap.appendChild(block);
+  });
+}
+
+/* ---------- QTY +/- HANDLER ---------- */
+sizesWrap.addEventListener("click", e => {
+  const btn = e.target.closest("button[data-act]");
+  if (!btn) return;
+  const size = btn.dataset.size;
+  const act  = btn.dataset.act;
+  if (act === "inc") qty[size] = Math.min(99, qty[size] + 1);
+  if (act === "dec") qty[size] = Math.max(0, qty[size] - 1);
+  document.getElementById(`qty-${size}`).textContent = qty[size];
+  renderNameSlots(size);
+  updateTotal();
+  updateReceipt();
+});
+
+/* ---------- NAME FIELD RENDERING ---------- */
+function slotCountFor(qtyN) {
+  if (qtyN <= 0) return 0;
+  return Math.max(MIN_NAME_SLOTS, Math.ceil(qtyN / SHIRTS_PER_REP));
+}
+
+function renderNameSlots(size) {
+  const block = sizesWrap.querySelector(`.size-block[data-size="${size}"]`);
+  const wrap  = document.getElementById(`names-${size}`);
+  const rows  = document.getElementById(`nrows-${size}`);
+  const n = slotCountFor(qty[size]);
+
+  if (n === 0) {
+    wrap.classList.add("hidden");
+    block.classList.remove("active");
+    rows.innerHTML = "";
+    return;
+  }
+  wrap.classList.remove("hidden");
+  block.classList.add("active");
+
+  // Grow names array if needed; keep existing values
+  while (names[size].length < n) names[size].push("");
+
+  // Build inputs
+  rows.innerHTML = "";
+  for (let i = 0; i < n; i++) {
+    const row = document.createElement("div");
+    row.className = "name-row";
+    row.innerHTML = `
+      <span class="nm-idx">${i + 1}.</span>
+      <input type="text"
+             autocomplete="off"
+             placeholder="Recipient ${i + 1} name"
+             value="${escapeAttr(names[size][i] || "")}"
+             data-size="${size}"
+             data-idx="${i}" />
+    `;
+    rows.appendChild(row);
+  }
+}
+
+sizesWrap.addEventListener("input", e => {
+  const inp = e.target.closest("input[type='text']");
+  if (!inp) return;
+  const size = inp.dataset.size;
+  const idx  = Number(inp.dataset.idx);
+  names[size][idx] = inp.value;
+  updateReceipt();
+});
+
+/* ---------- TOTALS ---------- */
+function updateTotal() {
+  const total = SIZES.reduce((s, sz) => s + qty[sz], 0);
+  totalEl.textContent = total;
+}
+
+/* ---------- LOAD STORE DIRECTORY ---------- */
+async function loadDirectory() {
+  try {
+    const res = await fetch(DIRECTORY_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    directory = await res.json();
+    populateStores();
+  } catch (err) {
+    storeSelect.innerHTML = '<option value="">Failed to load stores</option>';
+    showStatus("error", "Could not load store directory. Check your connection and try again.");
+    console.error(err);
+  }
+}
+
+function populateStores() {
+  const stores = (directory.stores || []).slice().sort((a,b) => a.localeCompare(b));
+  storeSelect.innerHTML = '<option value="">Please select…</option>' +
+    stores.map(s => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join("");
+}
+
+storeSelect.addEventListener("change", () => {
+  renderStoreInfo();
+  updateReceipt();
+});
+
+addressEl.addEventListener("input", updateReceipt);
+
+function renderStoreInfo() {
+  const store = storeSelect.value;
+  if (!store || !directory) {
+    storeInfo.className = "info-empty";
+    storeInfo.textContent = "Select a store to auto-fill manager and DM info.";
+    return;
+  }
+  const mgrName  = directory.storeManagerNames?.[store] || "—";
+  const mgrEmail = directory.storeManagers?.[store] || "";
+  const dmEmail  = directory.storeDMs?.[store] || "";
+
+  storeInfo.className = "";
+  storeInfo.innerHTML = `
+    <div class="info-row"><span class="lbl">Store Manager</span><span class="val">${escapeHtml(mgrName)}</span></div>
+    <div class="info-row"><span class="lbl">Mgr Email</span><span class="val">${escapeHtml(mgrEmail || "—")}</span></div>
+    <div class="info-row"><span class="lbl">District Manager</span><span class="val">${escapeHtml(dmEmail || "—")}</span></div>
+  `;
+}
+
+/* ---------- ORDER RECEIPT BUILDER ---------- */
+function buildOrderText() {
+  const store = storeSelect.value || "(no store selected)";
+  const mgrName  = (directory && directory.storeManagerNames?.[store]) || "—";
+  const mgrEmail = (directory && directory.storeManagers?.[store]) || "";
+  const dmEmail  = (directory && directory.storeDMs?.[store]) || "";
+  const addr     = addressEl.value.trim();
+  const total    = SIZES.reduce((s, sz) => s + qty[sz], 0);
+
+  const dateStr = new Date().toLocaleString("en-US", {
+    year: "numeric", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit"
+  });
+
+  const L = [];
+  L.push("═══════════════════════════════════════");
+  L.push("   BLUFOX MOBILE — UNIFORM ORDER");
+  L.push("═══════════════════════════════════════");
+  L.push("");
+  L.push(`DATE:  ${dateStr}`);
+  L.push("");
+  L.push("SHIP TO:");
+  L.push(`  ${store}`);
+  if (addr) {
+    addr.split(/\r?\n/).forEach(line => L.push(`  ${line}`));
+  } else {
+    L.push("  (address not provided — use store address on file)");
+  }
+  L.push("");
+  L.push("───────────────────────────────────────");
+  L.push("ITEMS");
+  L.push("───────────────────────────────────────");
+
+  let anyItems = false;
+  SIZES.forEach(sz => {
+    if (qty[sz] <= 0) return;
+    anyItems = true;
+    const slots = slotCountFor(qty[sz]);
+    const recips = (names[sz] || []).slice(0, slots).map(s => s.trim()).filter(Boolean);
+    L.push("");
+    L.push(`  Size: ${sz.padEnd(4)}  |  Qty: ${qty[sz]}`);
+    if (recips.length === 0) {
+      L.push("    • (no recipient names listed)");
+    } else {
+      recips.forEach(n => L.push(`    • ${n}`));
+    }
+  });
+  if (!anyItems) {
+    L.push("");
+    L.push("  (no items)");
+  }
+
+  L.push("");
+  L.push("───────────────────────────────────────");
+  L.push(`TOTAL SHIRTS: ${total}`);
+  L.push("═══════════════════════════════════════");
+
+  return { text: L.join("\n"), store, mgrName, mgrEmail, dmEmail, addr, total };
+}
+
+function updateReceipt() {
+  const { text } = buildOrderText();
+  receiptEl.textContent = text;
+}
+
+/* ---------- SUBMIT ---------- */
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const store = storeSelect.value;
+  if (!store) {
+    showStatus("error", "Please select your store.");
+    return;
+  }
+  const total = SIZES.reduce((s, sz) => s + qty[sz], 0);
+  if (total === 0) {
+    showStatus("error", "Add at least one shirt to submit an order.");
+    return;
+  }
+
+  const { text: emailBody, mgrName, mgrEmail, dmEmail, addr } = buildOrderText();
+
+  // Build itemized array for the Zap (in addition to the formatted body)
+  const items = SIZES.filter(sz => qty[sz] > 0).map(sz => ({
+    size: sz,
+    qty: qty[sz],
+    recipients: (names[sz] || [])
+      .slice(0, slotCountFor(qty[sz]))
+      .map(n => n.trim())
+      .filter(Boolean)
+  }));
+
+  const payload = {
+    submittedAt: new Date().toISOString(),
+    store: store,
+    storeAddress: addr,
+    storeManagerName: mgrName,
+    storeManagerEmail: mgrEmail,
+    dmEmail: dmEmail,
+    opsManagerEmail: OPS_MANAGER_EMAIL,
+    submitterEmail: SUBMITTER_EMAIL,
+    // Convenience: comma-separated recipient list for the Zap to plug directly into Outlook's To field
+    emailTo: [OPS_MANAGER_EMAIL, SUBMITTER_EMAIL, dmEmail, mgrEmail].filter(Boolean).join(","),
+    emailSubject: `Uniform Order – ${store}`,
+    emailBody: emailBody,
+    items: items,
+    totalShirts: total
+  };
+
+  submitBtn.disabled = true;
+  showStatus("loading", "Submitting order…");
+
+  try {
+    if (!ZAPIER_WEBHOOK_URL || ZAPIER_WEBHOOK_URL.startsWith("REPLACE_")) {
+      console.log("Order payload (Zap webhook not configured):", payload);
+      showStatus("success",
+        "Preview mode: order captured locally. Paste your Zapier webhook URL into the HTML to enable real submission.");
+      submitBtn.disabled = false;
+      return;
+    }
+
+    const res = await fetch(ZAPIER_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    showStatus("success", "Order submitted! Operations will follow up via email.");
+    resetForm();
+  } catch (err) {
+    console.error(err);
+    showStatus("error", "Submission failed. Please try again or contact Operations directly.");
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+
+function resetForm() {
+  form.reset();
+  SIZES.forEach(s => {
+    qty[s] = 0;
+    names[s] = [];
+    document.getElementById(`qty-${s}`).textContent = 0;
+    renderNameSlots(s);
+  });
+  updateTotal();
+  storeInfo.className = "info-empty";
+  storeInfo.textContent = "Select a store to auto-fill manager and DM info.";
+  receiptEl.textContent = "Select a store and add shirts to preview your order.";
+}
+
+function showStatus(kind, msg) {
+  statusEl.className = `status show ${kind}`;
+  statusEl.textContent = msg;
+  if (kind === "success") setTimeout(() => statusEl.classList.remove("show"), 6000);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  }[c]));
+}
+function escapeAttr(s) {
+  return escapeHtml(s);
+}
+
+/* ---------- INIT ---------- */
+buildSizeBlocks();
+loadDirectory();
+</script>
+</body>
+</html>
