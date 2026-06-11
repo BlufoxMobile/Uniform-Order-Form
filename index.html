@@ -550,12 +550,14 @@ function renderStoreInfo() {
   }
   const mgrName  = directory.storeManagerNames?.[store] || "—";
   const mgrEmail = directory.storeManagers?.[store] || "";
+  const asmEmail = directory.storeAMs?.[store] || "";
   const dmEmail  = directory.storeDMs?.[store] || "";
 
   storeInfo.className = "";
   storeInfo.innerHTML = `
     <div class="info-row"><span class="lbl">Store Manager</span><span class="val">${escapeHtml(mgrName)}</span></div>
     <div class="info-row"><span class="lbl">Mgr Email</span><span class="val">${escapeHtml(mgrEmail || "—")}</span></div>
+    <div class="info-row"><span class="lbl">ASM Email</span><span class="val">${escapeHtml(asmEmail || "—")}</span></div>
     <div class="info-row"><span class="lbl">District Manager</span><span class="val">${escapeHtml(dmEmail || "—")}</span></div>
   `;
 }
@@ -565,6 +567,7 @@ function buildOrderText() {
   const store = storeSelect.value || "(no store selected)";
   const mgrName  = (directory && directory.storeManagerNames?.[store]) || "—";
   const mgrEmail = (directory && directory.storeManagers?.[store]) || "";
+  const asmEmail = (directory && directory.storeAMs?.[store]) || "";
   const dmEmail  = (directory && directory.storeDMs?.[store]) || "";
   const addr     = addressEl.value.trim();
   const total    = SIZES.reduce((s, sz) => s + qty[sz], 0);
@@ -617,7 +620,7 @@ function buildOrderText() {
   L.push(`TOTAL SHIRTS: ${total}`);
   L.push("═══════════════════════════════════════");
 
-  return { text: L.join("\n"), store, mgrName, mgrEmail, dmEmail, addr, total };
+  return { text: L.join("\n"), store, mgrName, mgrEmail, asmEmail, dmEmail, addr, total };
 }
 
 /* ---------- HTML EMAIL BODY BUILDER ---------- */
@@ -715,7 +718,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  const { text: emailBody, mgrName, mgrEmail, dmEmail, addr } = buildOrderText();
+  const { text: emailBody, mgrName, mgrEmail, asmEmail, dmEmail, addr } = buildOrderText();
 
   // Build itemized array for the Zap (in addition to the formatted body)
   const items = SIZES.filter(sz => qty[sz] > 0).map(sz => ({
@@ -733,11 +736,12 @@ form.addEventListener("submit", async (e) => {
     storeAddress: addr,
     storeManagerName: mgrName,
     storeManagerEmail: mgrEmail,
+    asmEmail: asmEmail,
     dmEmail: dmEmail,
     opsManagerEmail: OPS_MANAGER_EMAIL,
     submitterEmail: SUBMITTER_EMAIL,
     // Convenience: comma-separated recipient list for the Zap to plug directly into Outlook's To field
-    emailTo: [OPS_MANAGER_EMAIL, SUBMITTER_EMAIL, dmEmail, mgrEmail].filter(Boolean).join(","),
+    emailTo: [OPS_MANAGER_EMAIL, SUBMITTER_EMAIL, dmEmail, asmEmail, mgrEmail].filter(Boolean).join(","),
     emailSubject: `Uniform Order – ${store}`,
     emailBody: emailBody,
     emailBodyHtml: buildOrderHtml(),
