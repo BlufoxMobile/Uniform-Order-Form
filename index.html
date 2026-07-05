@@ -393,6 +393,11 @@ const DIRECTORY_URL = "https://blufoxmobile.github.io/Daily-Sales-Report/data/st
 // Zapier "Catch Hook" webhook URL.
 const ZAPIER_WEBHOOK_URL = "https://hooks.zapier.com/hooks/catch/20441079/4ofsrie/";
 
+// Worker route that SAVES each order so it appears on the Brinks "Uniform Orders"
+// tab. This runs in ADDITION to the Zapier email above. If you deploy the uniform
+// worker at a different URL, update this constant.
+const ORDER_SAVE_ENDPOINT = "https://brinks-pickup-orchestrator.jeff-bilbrey-jb.workers.dev/uniform-order";
+
 // Recipients that are constant (always on the email):
 const OPS_MANAGER_EMAIL = "ErRodriguez@blufoxmobile.com";
 const SUBMITTER_EMAIL   = "jbilbrey@blufoxmobile.com"; // you
@@ -770,6 +775,30 @@ form.addEventListener("submit", async (e) => {
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error("HTTP " + res.status);
+
+    // Also save the order to the Brinks "Uniform Orders" tracker tab.
+    // Best-effort: if this fails, the order was still emailed to Operations.
+    if (ORDER_SAVE_ENDPOINT && !ORDER_SAVE_ENDPOINT.startsWith("PASTE_")) {
+      try {
+        await fetch(ORDER_SAVE_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify({
+            submittedAt: payload.submittedAt,
+            store: payload.store,
+            storeAddress: payload.storeAddress,
+            storeManagerName: payload.storeManagerName,
+            storeManagerEmail: payload.storeManagerEmail,
+            asmEmail: payload.asmEmail,
+            dmEmail: payload.dmEmail,
+            items: payload.items,
+            totalShirts: payload.totalShirts
+          })
+        });
+      } catch (saveErr) {
+        console.warn("Order save (tracker) failed — order was still emailed:", saveErr);
+      }
+    }
 
     showStatus("success", "Order submitted! Operations will follow up via email.");
     resetForm();
